@@ -1,0 +1,25 @@
+---
+ - name: This PlayBook is Used to Patch the servers
+   hosts: localhost
+   gather_facts: yes
+   become: yes
+   tasks:
+   - block:
+           - shell: df -h / --output\=avail | tail -1
+             register: space_check
+           - shell: uptime
+             register: up_time
+           - shell: ifconfig -a 
+             register: ifconfig_a
+           - shell: netstat -nr
+             register: net_stat
+           - shell: findmnt --verify
+             register: fstab
+   - debug: msg="Ansible_distribution= {{ ansible_distribution_version}}"
+   - debug: msg="{{space_check.stdout_lines}}"
+   - debug: msg="{{up_time.stdout_lines}}"
+   - debug: msg="{{ifconfig_a.stdout_lines}}"
+   - debug: msg="{{net_stat.stdout_lines}}"
+   - debug: msg="{{fstab.stdout_lines}}"
+
+
