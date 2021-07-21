@@ -1,1 +1,18 @@
+# This is a Playbook Written for downloading Applications using Yum module
+
+---  # This symbol denotes that this is a playbook
+ - name: This is playbook to download required application using yum command
+   hosts: localhost # This is name of required hostname in this case
+   become: True # This command is used to give root privilage to the user in this case
+   gather_facts: False # This command is used to fetch ansible facts, but in this case i don't need it
+   ignore_errors: True # This command is used to ignore errors in the the task if there is any
+   tasks:
+   - name: Downloading required applications
+     yum:
+     - name: git  # Here i can put any application name
+       state: present # This is state of application, it may be latest, absent etc.
+     - name: httpd
+       state: present
+
+
 
