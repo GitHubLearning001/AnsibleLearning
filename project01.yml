@@ -1,0 +1,40 @@
+---
+ - name: Playbook to extend the FS
+   hosts: localhost
+   become: yes
+   vars_prompt:
+    - name: "FS"
+      prompt: "Please provide the file name for the space xtension?"
+      private: no
+    - name: "MB"
+      prompt: "Please provide the file size to increase like +10M or +10G"
+      private: no
+   vars:
+        fs: "{{FS}}"
+        mb: "{{MB}}"
+   tasks:
+           #   - name: checking spaces in the vg group
+
+
+     - name: check the fs
+       shell: df -h {{fs}}
+       register: sizeouput
+     - debug:
+             msg: "{{sizeouput.stdout.split()}}"
+     - name: check the fs
+       shell: df -mP {{fs}} |grep / |awk '{print $1}'
+       register: size
+     - debug:
+             msg: "{{size.stdout.split()}}"
+     - set_fact:
+        size={{ size.stdout }}
+     - name:
+       shell: lvextend -rL {{mb}} {{size}}
+     - name: check the fs
+       shell: df -h {{fs}}
+       register: sizeouput1
+     - debug:
+         var: sizeouput1.stdout_lines
+     - set_fact:
+             soutput={{ sizeouput1.stdout_lines}}
+     - debug: var=soutput
