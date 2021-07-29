@@ -1,0 +1,39 @@
+---
+ - name: This PlayBook is Used to Patch the servers
+   hosts: localhost
+   gather_facts: yes
+   become: yes
+   tasks:
+   - name: This command is used to check avaialable space
+     shell: df -h /mnt --output\=avail
+     register: space_check
+   - name: The uptime of server
+     shell: uptime
+     register: up_time
+   - name: Create a file
+     delegate_to: localhost
+     copy:
+             dest: ./abc.csv
+             content: "Name,space,uptime"
+   - name: creating content
+     lineinfile:
+             path: ./abc.csv
+             line: "{{ansible_nodename}},{{space_check.stdout.split()[1]}},{{up_time.stdout.split()[2]}}"
+     delegate_to: localhost
+   - name: Sending an e-mail using Gmail SMTP servers
+     mail:
+       host: "smtp.gmail.com"
+       port: 587
+       username: "sender's email"
+       password: "app generated passwd"
+       to: "name of reciever <reciever email>"
+       subject: Ansible-report
+       body:
+            your message
+
+
+       attach: "./abc.csv"
+       secure: starttls
+     delegate_to: localhost
+     run_once: yes
+
