@@ -7,9 +7,9 @@
     mail:
       host: smtp.gmail.com
       port: 587
-      username: "abhishek@gmail.com"
+      username: "sender's gmail id"
       password: "Passwd"  # This password is Generated in gmail (Other App password section in gmail)
-      to: "Abhishek Kumar <ak02919@gmail.com>"
+      to: "name of reciever <reciever gmail Id>"
       subject: Email By Ansible
       body: Test successful
 
