@@ -1,0 +1,45 @@
+---
+ - name: This is an automation file
+   hosts: localhost
+   become: yes
+   gather_facts: yes
+   tasks:
+           - name: checking file
+             shell: findmnt --fstab --output=\target
+             register: targetfolder
+           - debug:
+                   msg: "{{targetfolder.stdout_lines}}"
+           - set_fact:
+                  target={{targetfolder.stdout_lines}}
+           - debug: var=target
+           - name: checking file
+             shell: findmnt --fstab --output=\source
+             register: sourcefile
+           - debug:
+                   msg: "{{sourcefile.stdout_lines}}"
+           - set_fact:
+                   source={{sourcefile.stdout_lines}}
+           - debug: var=source
+           - name: checking file
+             shell: findmnt --fstab --output=\fstype
+             register: fstypefile
+           - debug:
+                   msg: "{{fstypefile.stdout_lines}}"
+           - set_fact:
+                  fstype={{fstypefile.stdout_lines}}
+           - debug: var=fstype
+           - name: This is file
+             copy:
+                dest: ./test.csv
+                content: ""
+           - name: Add mappings
+             lineinfile:
+                 insertafter: EOF
+                 dest: ./test.csv
+                 line: "{{ item.0 }},{{ item.1 }},{{ item.2 }},{{ item.3}}"
+             with_together:
+                - "{{ ansible_hostname}}"
+                - "{{ target }}"
+                - "{{ source }}"
+                - "{{ fstype }}"
+
