@@ -1,6 +1,6 @@
 ---
- - name: This PlayBook is Used to Patch the servers
-   hosts: localhost
+ - name: This PlayBook is Used to check spaces of files in the servers
+   hosts: all
    gather_facts: yes
    become: yes
    tasks:
