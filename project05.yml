@@ -1,0 +1,46 @@
+---
+ - name: Playbook to extend the FS
+   hosts: localhost
+   become: yes
+   vars_prompt:
+    - name: "FS"
+      prompt: "Please provide the file name for the space xtension?"
+      private: no
+    - name: "MB"
+      prompt: "Please provide the file size to increase like +10M or +10G"
+      private: no
+   vars:
+        fs: "{{FS}}"
+        mb: "{{MB}}"
+   tasks:
+   - name: The Address of FileSystem
+     shell: df |grep {{fs}}
+     register: voladd
+   - debug:
+       msg: "The VG Add.= {{voladd.stdout.split()[0].split('/')[3].split('-')[0]}}"
+   - set_fact:
+         volname={{voladd.stdout.split()[0].split('/')[3].split('-')[0]}}
+   - name: The Free Space Of Vol Group
+     shell: vgs |grep {{volname}}
+     register: volspace
+   - set_fact:
+          volspaceg={{volspace.stdout.split()[-1]}}
+   - debug:
+       msg: "The Free Space in GB = {{volspaceg}}"
+   - fail:
+       msg: " Infufficient space"
+     when: volspaceg < mb
+   - name: check the fs
+     shell: df -mP {{fs}} |grep / |awk '{print $1}'
+     register: size
+   - debug:
+           msg: "{{size.stdout_lines}}"
+   - set_fact:
+       size={{ size.stdout }}
+   - name: Increasing The File Space
+     shell: lvextend -rL {{mb}} {{size}}
+   - name: check the fs
+     shell: df -h {{fs}}
+     register: sizeoutput1
+   - debug: var=sizeoutput1
+
