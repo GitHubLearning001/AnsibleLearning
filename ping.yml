@@ -1,0 +1,23 @@
+---
+ - name: This is connectivity server
+   hosts: all
+   become: yes
+   gather_facts: yes
+   tasks:
+           - name: This is ping module
+             shell: ping {{ansible_nodename}} -c 5
+             register: ping
+           - debug:
+               msg: "{{ping.changed}}"
+           - set_fact:
+                   pingconnect={{ ping.changed}}
+           - name: This is file
+             copy:
+               dest: ./ping.csv
+               content: "Server Name, Connectivity Status"
+             delegate_to: localhost
+           - name: Updating Status
+             delegate_to: localhost
+             lineinfile:
+                     path: ./ping.csv
+                     line: "{{ansible_nodename}},{{pingconnect}}"
